@@ -1,0 +1,190 @@
+server:
+  port: 8808
+spring:
+  application:
+    name: emoke
+  security:
+    user:
+      password: 123456@2019
+  datasource:
+    username: root
+    password: yaose@2021_
+    url: jdbc:mysql://47.96.189.169:3306/wisdom_campus?characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 下面为连接池的补充设置，应用到上面所有数据源中
+    # 初始化大小，最小，最大
+    initial-size: 5
+    min-idle: 5
+    max-active: 20
+    # 配置获取连接等待超时的时间
+    max-wait: 60000
+    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    time-between-eviction-runs-millis: 60000
+    # 配置一个连接在池中最小生存的时间，单位是毫秒
+    min-evictable-idle-time-millis: 300000
+    validation-query: SELECT 1 FROM DUAL
+    test-while-idle: true
+    test-on-borrow: false
+    test-on-return: false
+    # 打开PSCache，并且指定每个连接上PSCache的大小
+    pool-prepared-statements: true
+    #   配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    max-pool-prepared-statement-per-connection-size: 20
+    filters: stat,wall
+    use-global-data-source-stat: true
+    # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+    connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+  shardingsphere:
+    datasource:
+      names: ds0,ds1
+      ds0:
+        username: root
+        password: yaose@2021_
+        url: jdbc:mysql://47.96.189.169:3306/wisdom_campus?characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+        driver-class-name: com.mysql.jdbc.Driver
+        type: com.alibaba.druid.pool.DruidDataSource
+        # 下面为连接池的补充设置，应用到上面所有数据源中
+        # 初始化大小，最小，最大
+        initial-size: 5
+        min-idle: 5
+        max-active: 20
+        # 配置获取连接等待超时的时间
+        max-wait: 60000
+        # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+        time-between-eviction-runs-millis: 60000
+        # 配置一个连接在池中最小生存的时间，单位是毫秒
+        min-evictable-idle-time-millis: 300000
+        validation-query: SELECT 1 FROM DUAL
+        test-while-idle: true
+        test-on-borrow: false
+        test-on-return: false
+        # 打开PSCache，并且指定每个连接上PSCache的大小
+        pool-prepared-statements: true
+        #   配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+        max-pool-prepared-statement-per-connection-size: 20
+        filters: stat,wall
+        use-global-data-source-stat: true
+        # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+        connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      ds1:
+        username: root
+        password: yaose@2021_
+        url: jdbc:mysql://47.96.189.169:3306/wisdom_campus_one?characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+        driver-class-name: com.mysql.jdbc.Driver
+        type: com.alibaba.druid.pool.DruidDataSource
+        # 下面为连接池的补充设置，应用到上面所有数据源中
+        # 初始化大小，最小，最大
+        initial-size: 5
+        min-idle: 5
+        max-active: 20
+        # 配置获取连接等待超时的时间
+        max-wait: 60000
+        # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+        time-between-eviction-runs-millis: 60000
+        # 配置一个连接在池中最小生存的时间，单位是毫秒
+        min-evictable-idle-time-millis: 300000
+        validation-query: SELECT 1 FROM DUAL
+        test-while-idle: true
+        test-on-borrow: false
+        test-on-return: false
+        # 打开PSCache，并且指定每个连接上PSCache的大小
+        pool-prepared-statements: true
+        #   配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+        max-pool-prepared-statement-per-connection-size: 20
+        filters: stat,wall
+        use-global-data-source-stat: true
+        # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+        connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    sharding:
+      default-database-strategy:
+        inline:
+          sharding-column: uid
+          algorithm-expression: ds$->{uid % 2}
+      tables:
+        tb_ident_record:
+          #actual-data-nodes: ds0.tb_ident_record_$->{1..2}
+          actual-data-nodes: ds$->{0..1}.tb_ident_record_$->{1..2}
+          table-strategy:
+            inline:
+              sharding-column: id
+              algorithm-expression: tb_ident_record_$->{id%2+1}
+          key-generator:
+            column: id
+            type: SNOWFLAKE
+      binding-tables: tb_ident_record
+      default-data-source-name: ds0
+    props:
+      sql:true
+  redis:
+    # Redis数据库索引（默认为0）
+    database: 1
+    # Redis服务器地址
+    host: 47.96.189.169
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password: yaose@2021_
+    timeout: 0
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 0
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
+mybatis:
+  mapper-locations: classpath*:mybatis/**/*.xml
+rocketmq:
+  # 生产者配置
+  producer:
+    groupName: ${spring.application.name}
+    default: false
+  # 消费者配置
+  consumer:
+    groupName: ${spring.application.name}
+    topics: rocketTopic,rocketTag,t_TopicTest
+namesrvAddr: 192.168.1.29:9876
+box_username: yaose@megvii.com
+box_password: yaose123456
+koala_key: LWTHYQ9msrMWA1ILfMQagKGjVBD4e19l
+koala_secret: 5N9GgnRV1xU5gpHgyEeFl14mdJMmQ1Wv
+ip_address: 192.168.1.51
+#image_path: /Users/guanfenghua/Downloads/111/
+#image_path: C:\project\school\images\
+image_path: D:\images\
+#image_path: /Users/chen/Desktop/data/
+virtual_path: imgs/
+swagger_enabled: true
+authAppId: dc72942d3e7f43be83bb2aeebd2572a2
+authAppSecret: e349403eceb4fcdfbb53c9e3cb3428e0
+flyHost: open.yun.nsfz.net
+flyPort: 80
+publicKey: 305C300D06092A864886F70D0101010500034B003048024100BB25128F563A8A45C282DA91B89599749624DADEEDBAB8802DA374A0700C034E295C8A0B9C7BD3E4CC407ADF23C815A13F1CB57AD1BC8D3F9BE2A49C066C27310203010001
+#资源类不拦截的配置
+resource_path: /swagger-ui.html,/webjars/**,/imgs/**
+#sso不拦截的路径
+#盘古框架配置url映射
+pgServer: pangu@http://172.21.0.208,koala@http://192.168.1.51,huawei@https://192.168.1.111:18531,tupu@https://access.tuputech.com,koalaface@http://192.168.1.51:8866,xunfeiauth@http://edu.nsfz.net
+tcpPort: 8950
+logging:
+  level:
+    io:
+      netty:
+        handler: DEBUG
+    com.smart.mybatis.mapper: TRACE
+    com.emoke.core: TRACE
+
+    org:
+      apache:
+        shardingsphere:
+          core:
+            route: DEBUG
+        shiro:
+          INFO
+      redisson:
+        connection:
+          INFO
+      quartz:
+        core:
+          INFO
